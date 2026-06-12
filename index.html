@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nimbus Vista | Dynamic Weather & Interactive Maps</title>
+    <!-- Google Fonts + Leaflet CSS (OpenStreetMap for map) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* -------------------- DYNAMIC BACKGROUND DESIGN (CSS + JS ANIMATED) -------------------- */
+        /* Animated gradient mesh that shifts based on weather conditions / time or dynamic effect */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            transition: background 0.6s cubic-bezier(0.2, 0.8, 0.4, 1);
+        }
+        
+        /* Dynamic background layer - animated mesh gradient */
+        .dynamic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 30%, rgba(46, 125, 175, 0.25), rgba(12, 52, 84, 0.4));
+            transition: all 0.8s ease;
+        }
+        
+        /* Animated particle / wave overlay for modern feel */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .bg-animation::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255,255,240,0.05) 0px,
+                rgba(255,255,240,0.05) 2px,
+                transparent 2px,
+                transparent 8px
+            );
+            animation: slowShift 26s linear infinite;
+        }
+        
+        @keyframes slowShift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(40px, 40px) rotate(3deg); }
+        }
+        
+        /* floating orbs - css driven */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.4;
+            z-index: -1;
+            transition: all 2s ease;
+            pointer-events: none;
+        }
+        
+        /* professional glass container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(18, 25, 45, 0.38);
+            backdrop-filter: blur(14px);
+            border-radius: 2rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,255,0.2);
+            overflow: hidden;
+            padding: 1.6rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .logo h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #D6E6F5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo p {
+            font-size: 0.8rem;
+            color: #eef4ff;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        .search-box {
+            display: flex;
+            gap: 12px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            padding: 5px 5px 5px 20px;
+            border-radius: 60px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            width: 220px;
+            font-weight: 500;
+            background: transparent;
+            color: white;
+        }
+        .search-box input::placeholder {
+            color: rgba(255,255,240,0.8);
+        }
+        .search-box button, .location-btn {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        .search-box button:hover, .location-btn:hover {
+            background: #1f6392;
+            transform: scale(0.97);
+            border-color: white;
+        }
+        
+        /* Two column layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Weather Card Panel - glass enhanced */
+        .weather-panel {
+            background: rgba(10, 20, 35, 0.55);
+            backdrop-filter: blur(18px);
+            border-radius: 1.8rem;
+            padding: 1.6rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: transform 0.2s;
+        }
+        .current-weather {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+            padding-bottom: 1.2rem;
+        }
+        .city-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .temp-main {
+            font-size: 3.7rem;
+            font-weight: 800;
+            margin: 0.4rem 0;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+        .desc {
+            font-size: 1.1rem;
+            text-transform: capitalize;
+            color: #f0f9ff;
+            font-weight: 500;
+        }
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .detail-card {
+            background: rgba(30, 45, 70, 0.6);
+            backdrop-filter: blur(5px);
+            padding: 0.9rem;
+            border-radius: 1.2rem;
+            text-align: center;
+            font-weight: 500;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ccdeee;
+        }
+        .detail-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        .forecast-title {
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #f0fcff;
+        }
+        .forecast-grid {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .forecast-item {
+            min-width: 85px;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(4px);
+            border-radius: 1.2rem;
+            padding: 0.8rem 0.4rem;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .forecast-day {
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .forecast-temp {
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        /* Map Panel */
+        .map-panel {
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            backdrop-filter: blur(2px);
+        }
+        #map {
+            height: 480px;
+            width: 100%;
+            background: #1b2b3e;
+        }
+        .map-attribution {
+            font-size: 0.7rem;
+            text-align: center;
+            background: rgba(0,0,0,0.7);
+            color: #ddd;
+            padding: 5px;
+        }
+        
+        .loading, .error-msg {
+            text-align: center;
+            padding: 2rem;
+            font-weight: 500;
+            color: white;
+        }
+        .error-msg {
+            color: #ffbc6e;
+        }
+        
+        @media (max-width: 850px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .app-container {
+                padding: 1rem;
+            }
+            .search-box input {
+                width: 150px;
+            }
+        }
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #eef2ff;
+            text-shadow: 0 1px 2px black;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- DYNAMIC BACKGROUND DESIGN (controlled by JS & CSS) -->
+<div class="dynamic-bg" id="dynamicBg"></div>
+<div class="bg-animation"></div>
+<div id="orb1" class="orb" style="width: 300px; height: 300px; background: radial-gradient(circle, #ff9a5e, #ff4d6d); bottom: -100px; left: -80px;"></div>
+<div id="orb2" class="orb" style="width: 450px; height: 450px; background: radial-gradient(circle, #3b82f6, #1e3a8a); top: -150px; right: -100px;"></div>
+<div id="orb3" class="orb" style="width: 250px; height: 250px; background: radial-gradient(circle, #2dd4bf, #0f766e); bottom: 20%; right: 15%;"></div>
+
+<div class="app-container">
+    <div class="header">
+        <div class="logo">
+            <h1>⛅ Nimbus Vista</h1>
+            <p>Immersive Weather · Dynamic Backdrops</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <div class="search-box">
+                <input type="text" id="cityInput" placeholder="Tokyo, Paris, NYC..." value="San Francisco">
+                <button id="searchBtn">Forecast</button>
+            </div>
+            <button id="getLocationBtn" class="location-btn">📍 My Location</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="weather-panel" id="weatherPanel">
+            <div id="weatherContent">
+                <div class="loading">🌤️ Loading atmospheric data...</div>
+            </div>
+        </div>
+        <div class="map-panel">
+            <div id="map"></div>
+            <div class="map-attribution">🗺️ Click anywhere on map → instant weather & dynamic background shifts</div>
+        </div>
+    </div>
+    <footer>
+        Weather by OpenWeatherMap | Maps © OpenStreetMap | Atmospheric background reacts to conditions
+    </footer>
+</div>
+
+<script>
+    // ------------------- API Configuration -------------------
+    const WEATHER_API_KEY = 'bd5e378503939ddaee76f12ad7a97608';  // demo key (openweather free)
+    const BASE_WEATHER = 'https://api.openweathermap.org/data/2.5/weather';
+    const BASE_FORECAST = 'https://api.openweathermap.org/data/2.5/forecast';
+    
+    // map variables
+    let map;
+    let currentMarker = null;
+    let currentLat = 37.7749;
+    let currentLon = -122.4194;
+    
+    // ---------- DYNAMIC BACKGROUND DESIGN ENGINE (JS + CSS) ----------
+    // This function changes gradient colors + orb colors based on weather conditions (clear, rain, clouds, etc)
+    function updateDynamicBackground(weatherCondition, temperature) {
+        const dynamicBg = document.getElementById('dynamicBg');
+        const orb1 = document.getElementById('orb1');
+        const orb2 = document.getElementById('orb2');
+        const orb3 = document.getElementById('orb3');
+        
+        let primaryGradient = "";
+        let orbColor1 = "", orbColor2 = "", orbColor3 = "";
+        
+        // determine weather group
+        const condition = weatherCondition.toLowerCase();
+        // set mood palettes
+        if (condition.includes('clear') || condition.includes('sun')) {
+            primaryGradient = "radial-gradient(circle at 30% 40%, rgba(255, 184, 77, 0.35), rgba(33, 147, 176, 0.45)), radial-gradient(circle at 70% 80%, rgba(255, 213, 118, 0.3), rgba(21, 94, 117, 0.5))";
+            orbColor1 = "radial-gradient(circle, #f5b042, #ff7e33)";
+            orbColor2 = "radial-gradient(circle, #ffd966, #f59e0b)";
+            orbColor3 = "radial-gradient(circle, #fcd34d, #b45309)";
+        } 
+        else if (condition.includes('rain') || condition.includes('drizzle') || condition.includes('shower')) {
+            primaryGradient = "radial-gradient(circle at 20% 30%, rgba(54, 89, 112, 0.7), rgba(21, 45, 65, 0.8)), radial-gradient(circle at 80% 50%, rgba(63, 109, 128, 0.5), rgba(7, 27, 46, 0.7))";
+            orbColor1 = "radial-gradient(circle, #4f7d9e, #1e3a5f)";
+            orbColor2 = "radial-gradient(circle, #3b6e8b, #0c2e48)";
+            orbColor3 = "radial-gradient(circle, #5b8ca3, #1b4f6e)";
+        }
+        else if (condition.includes('cloud')) {
+            primaryGradient = "radial-gradient(circle at 40% 50%, rgba(128, 142, 155, 0.55), rgba(35, 55, 75, 0.7)), radial-gradient(circle at 90% 20%, rgba(160, 174, 192, 0.4), rgba(28, 45, 65, 0.6))";
+            orbColor1 = "radial-gradient(circle, #8d9dad, #3f5468)";
+            orbColor2 = "radial-gradient(circle, #a2b9ce, #2c4c6e)";
+            orbColor3 = "radial-gradient(circle, #b0c4de, #355e7a)";
+        }
+        else if (condition.includes('thunderstorm')) {
+            primaryGradient = "radial-gradient(circle at 30% 70%, rgba(45, 45, 65, 0.8), rgba(20, 20, 40, 0.9)), radial-gradient(circle at 60% 20%, rgba(80, 60, 90, 0.7), rgba(0, 0, 0, 0.8))";
+            orbColor1 = "radial-gradient(circle, #5f5f7a, #2d2d44)";
+            orbColor2 = "radial-gradient(circle, #7c5e7c, #2e1e3a)";
+            orbColor3 = "radial-gradient(circle, #554466, #19192b)";
+        }
+        else if (condition.includes('snow')) {
+            primaryGradient = "radial-gradient(circle at 25% 55%, rgba(200, 220, 240, 0.6), rgba(98, 125, 152, 0.7)), radial-gradient(circle at 85% 70%, rgba(225, 235, 250, 0.5), rgba(60, 85, 110, 0.6))";
+            orbColor1 = "radial-gradient(circle, #bfd9ff, #7c9ecf)";
+            orbColor2 = "radial-gradient(circle, #d4e6ff, #6b8eb3)";
+            orbColor3 = "radial-gradient(circle, #e0edfa, #5582a4)";
+        }
+        else {
+            // default serene
+            primaryGradient = "radial-gradient(circle at 20% 30%, rgba(46, 125, 175, 0.5), rgba(12, 52, 84, 0.6)), radial-gradient(circle at 75% 70%, rgba(96, 165, 210, 0.4), rgba(2, 38, 62, 0.7))";
+            orbColor1 = "radial-gradient(circle, #4791c2, #165a72)";
+            orbColor2 = "radial-gradient(circle, #3b82f6, #1e3a8a)";
+            orbColor3 = "radial-gradient(circle, #2dd4bf, #0f766e)";
+        }
+        
+        // additional temperature influence (warm/cold tint)
+        if (temperature !== undefined) {
+            if (temperature > 28) {
+                primaryGradient += ", radial-gradient(circle at 50% 20%, rgba(255, 140, 50, 0.25), transparent 70%)";
+            } else if (temperature < 5) {
+                primaryGradient += ", radial-gradient(circle at 10% 80%, rgba(180, 220, 255, 0.3), transparent 70%)";
+            }
+        }
+        
+        dynamicBg.style.background = primaryGradient;
+        orb1.style.background = orbColor1;
+        orb2.style.background = orbColor2;
+        orb3.style.background = orbColor3;
+        
+        // slight animation reset or extra shimmer
+        document.body.style.transition = "background 0.5s";
+    }
+    
+    // default init background
+    updateDynamicBackground("clear sky", 22);
+    
+    // ---------- WEATHER FETCH + FORECAST + BG UPDATE ----------
+    async function fetchWeatherAndForecast(lat, lon, cityNameFromSearch = null) {
+        const weatherPanel = document.getElementById('weatherContent');
+        weatherPanel.innerHTML = '<div class="loading">🌀 Syncing atmosphere & maps...</div>';
+        
+        try {
+            const weatherUrl = `${BASE_WEATHER}?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`;
+            const forecastUrl = `${BASE_FORECAST}?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`;
+            
+            const [weatherRes, forecastRes] = await Promise.all([
+                fetch(weatherUrl),
+                fetch(forecastUrl)
+            ]);
+            
+            if (!weatherRes.ok || !forecastRes.ok) throw new Error('Weather service unavailable. Check API key.');
+            
+            const weatherData = await weatherRes.json();
+            const forecastData = await forecastRes.json();
+            
+            const displayCity = weatherData.name || (cityNameFromSearch ? cityNameFromSearch : "Selected");
+            const temp = Math.round(weatherData.main.temp);
+            const feelsLike = Math.round(weatherData.main.feels_like);
+            const humidity = weatherData.main.humidity;
+            const wind = (weatherData.wind.speed * 3.6).toFixed(1);
+            const pressure = weatherData.main.pressure;
+            const description = weatherData.weather[0].description;
+            const iconCode = weatherData.weather[0].icon;
+            const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+            const conditionMain = weatherData.weather[0].main;
+            
+            // --- UPDATE DYNAMIC BACKGROUND BASED ON WEATHER CONDITIONS & TEMP ---
+            updateDynamicBackground(conditionMain + " " + description, temp);
+            
+            // Process 5-day forecast (midday picks)
+            const dailyMap = new Map();
+            forecastData.list.forEach(item => {
+                const date = new Date(item.dt * 1000);
+                const dayKey = date.toLocaleDateString('en-US', { weekday: 'short' });
+                if (!dailyMap.has(dayKey) && date.getHours() >= 11 && date.getHours() <= 14) {
+                    dailyMap.set(dayKey, { temp: Math.round(item.main.temp), icon: item.weather[0].icon, day: dayKey });
+                }
+            });
+            if (dailyMap.size < 4) {
+                forecastData.list.slice(0, 8).forEach(item => {
+                    const date = new Date(item.dt * 1000);
+                    const dayKey = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    if (!dailyMap.has(dayKey)) {
+                        dailyMap.set(dayKey, { temp: Math.round(item.main.temp), icon: item.weather[0].icon, day: dayKey });
+                    }
+                });
+            }
+            const forecastArray = Array.from(dailyMap.values()).slice(0, 5);
+            
+            const weatherHTML = `
+                <div class="current-weather">
+                    <div class="city-name">${displayCity} 🌎</div>
+                    <div class="temp-main">${temp}°C</div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <img src="${iconUrl}" alt="${description}" style="width: 55px;">
+                        <div class="desc">${description}</div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="detail-card"><div class="detail-label">🌡️ FEELS LIKE</div><div class="detail-value">${feelsLike}°C</div></div>
+                    <div class="detail-card"><div class="detail-label">💧 HUMIDITY</div><div class="detail-value">${humidity}%</div></div>
+                    <div class="detail-card"><div class="detail-label">💨 WIND</div><div class="detail-value">${wind} km/h</div></div>
+                    <div class="detail-card"><div class="detail-label">⏲️ PRESSURE</div><div class="detail-value">${pressure} hPa</div></div>
+                </div>
+                <div class="forecast-title">📅 5-Day Outlook</div>
+                <div class="forecast-grid">
+                    ${forecastArray.map(day => `
+                        <div class="forecast-item">
+                            <div class="forecast-day">${day.day}</div>
+                            <img src="https://openweathermap.org/img/wn/${day.icon}.png" style="width: 40px;">
+                            <div class="forecast-temp">${day.temp}°C</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            weatherPanel.innerHTML = weatherHTML;
+            
+            // update map
+            if (map) {
+                map.setView([lat, lon], 11);
+                if (currentMarker) map.removeLayer(currentMarker);
+                currentMarker = L.marker([lat, lon], { draggable: false }).addTo(map)
+                    .bindPopup(`<b>${displayCity}</b><br>${description}<br>${temp}°C`)
+                    .openPopup();
+            }
+            currentLat = lat;
+            currentLon = lon;
+            
+        } catch (error) {
+            console.error(error);
+            weatherPanel.innerHTML = `<div class="error-msg">⚠️ ${error.message}<br>Please try another city or check connection.</div>`;
+        }
+    }
+    
+    // geocode city name
+    async function searchCityWeather(cityName) {
+        if (!cityName.trim()) return;
+        const weatherPanel = document.getElementById('weatherContent');
+        weatherPanel.innerHTML = '<div class="loading">🔍 Searching location...</div>';
+        try {
+            const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=1&appid=${WEATHER_API_KEY}`;
+            const geoRes = await fetch(geoUrl);
+            if (!geoRes.ok) throw new Error("Geocoding error");
+            const geoData = await geoRes.json();
+            if (!geoData.length) throw new Error("City not found. Try a major city name.");
+            const { lat, lon, name } = geoData[0];
+            await fetchWeatherAndForecast(lat, lon, name);
+        } catch (err) {
+            weatherPanel.innerHTML = `<div class="error-msg">❌ ${err.message}</div>`;
+        }
+    }
+    
+    // get user geolocation
+    function getUserLocation() {
+        if (!navigator.geolocation) {
+            alert("Geolocation not supported");
+            return;
+        }
+        const weatherPanel = document.getElementById('weatherContent');
+        weatherPanel.innerHTML = '<div class="loading">📍 Accessing your location...</div>';
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                await fetchWeatherAndForecast(latitude, longitude, "Your Location");
+            },
+            () => {
+                weatherPanel.innerHTML = `<div class="error-msg">⚠️ Location denied. Using default city.</div>`;
+                fetchWeatherAndForecast(37.7749, -122.4194, "San Francisco");
+            }
+        );
+    }
+    
+    // map click handler: update weather & background design
+    function onMapClick(e) {
+        const { lat, lng } = e.latlng;
+        fetchWeatherAndForecast(lat, lng, null);
+    }
+    
+    // init leaflet map
+    function initMap() {
+        map = L.map('map').setView([currentLat, currentLon], 11);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+        map.on('click', onMapClick);
+        currentMarker = L.marker([currentLat, currentLon]).addTo(map).bindPopup('🌍 Nimbus Vista').openPopup();
+    }
+    
+    async function loadDefault() {
+        initMap();
+        await fetchWeatherAndForecast(37.7749, -122.4194, "San Francisco");
+    }
+    
+    // event listeners
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        const city = document.getElementById('cityInput').value.trim();
+        if (city) searchCityWeather(city);
+        else searchCityWeather("San Francisco");
+    });
+    document.getElementById('getLocationBtn').addEventListener('click', getUserLocation);
+    document.getElementById('cityInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('searchBtn').click();
+    });
+    
+    loadDefault();
+    window.addEventListener('resize', () => { if (map) setTimeout(() => map.invalidateSize(), 100); });
+</script>
+</body>
+</html>
+
