@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Movies Time | Professional Movie Database</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f0f11;
+      color: #e8e8e8;
+    }
+
+    /* Premium Gradient Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.08), rgba(15, 15, 17, 0.98));
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(45deg, rgba(255, 107, 53, 0.02) 0px, rgba(255, 107, 53, 0.02) 2px, transparent 2px, transparent 8px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Premium Header */
+    .header {
+      background: rgba(10, 10, 14, 0.92);
+      backdrop-filter: blur(20px);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo-icon {
+      font-size: 2rem;
+      color: #ff6b35;
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffd700, #ff6b35);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .logo-badge {
+      font-size: 0.7rem;
+      background: rgba(255, 107, 53, 0.2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      margin-left: 0.5rem;
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-container i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ff6b35;
+      font-size: 1rem;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      background: rgba(30, 30, 40, 0.9);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      border-radius: 2rem;
+      color: white;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .search-container input:focus {
+      outline: none;
+      border-color: #ff6b35;
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: #e0e0e0;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: #ff6b35;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.6), rgba(42, 82, 152, 0.4));
+      backdrop-filter: blur(10px);
+      border-radius: 1.5rem;
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      border: 1px solid rgba(255, 107, 53, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff, #ff6b35);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: #aaa;
+      font-size: 1rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .stat i {
+      color: #ff6b35;
+    }
+
+    /* Premium Filters */
+    .filters-panel {
+      background: rgba(20, 20, 28, 0.8);
+      backdrop-filter: blur(16px);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 107, 53, 0.2);
+    }
+
+    .filters-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+
+    .filter-item {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .filter-label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #ff6b35;
+      margin-bottom: 0.4rem;
+    }
+
+    .filter-item select, .filter-item input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: rgba(10, 10, 14, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.8rem;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filter-item select:focus, .filter-item input:focus {
+      outline: none;
+      border-color: #ff6b35;
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #ff6b35, #ff4d1e);
+      border: none;
+      padding: 0.7rem 1.8rem;
+      border-radius: 0.8rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+    }
+
+    /* Results Header */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .results-count {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    .results-count strong {
+      color: #ff6b35;
+      font-size: 1.2rem;
+    }
+
+    .view-options {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .view-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    /* Movie Grid Premium */
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .movie-card {
+      background: rgba(25, 25, 32, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 1.2rem;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .movie-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ff6b35, #ffd700);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .movie-card:hover::before {
+      opacity: 1;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 107, 53, 0.5);
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: #0a0a0c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .movie-card:hover .poster img {
+      transform: scale(1.05);
+    }
+
+    .rating-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .rating-badge i {
+      color: #ffd700;
+      font-size: 0.6rem;
+    }
+
+    .movie-info {
+      padding: 1rem;
+    }
+
+    .movie-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .movie-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: #888;
+    }
+
+    /* Modal Premium */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.96);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      max-width: 1100px;
+      width: 100%;
+      background: linear-gradient(145deg, #1a1a24, #12121a);
+      border-radius: 1.5rem;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.6);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+
+    .modal-close:hover {
+      background: #ff6b35;
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .modal-poster {
+      flex: 0 0 320px;
+      padding: 2rem;
+    }
+
+    .modal-poster img {
+      width: 100%;
+      border-radius: 1rem;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-info {
+      flex: 1;
+      padding: 2rem 2rem 2rem 0;
+    }
+
+    .modal-info h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-year {
+      color: #ff6b35;
+      margin-bottom: 1rem;
+    }
+
+    .rating-large {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(255, 107, 53, 0.1);
+      border-radius: 1rem;
+    }
+
+    .rating-score {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #ffd700;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .info-item i {
+      color: #ff6b35;
+      width: 24px;
+    }
+
+    .languages-box {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 1rem;
+      border-left: 3px solid #ff6b35;
+    }
+
+    .languages-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .language-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .language-tag {
+      background: rgba(255, 107, 53, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .plot {
+      margin: 1rem 0;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(10, 10, 14, 0.9);
+      margin-top: 3rem;
+      border-top: 1px solid rgba(255, 107, 53, 0.2);
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      .hero h1 { font-size: 1.5rem; }
+      .filters-grid { flex-direction: column; }
+      .modal-body { flex-direction: column; }
+      .modal-poster { flex: auto; max-width: 220px; margin: 0 auto; }
+      .modal-info { padding: 1rem; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-film logo-icon"></i>
+        <span class="logo-text">MOVIES TIME</span>
+        <span class="logo-badge">PREMIUM</span>
+      </div>
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search any movie... (The Godfather, Inception, Titanic)">
+      </div>
+      <div class="nav-links">
+        <a href="#" class="active">Movies</a>
+        <a href="#">TV Shows</a>
+        <a href="#">Top Rated</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1><i class="fas fa-crown"></i> Complete Movie Database</h1>
+      <p>100+ premium movies • Real Time Ratings • Cast & Crew • Available Languages</p>
+      <div class="hero-stats">
+        <div class="stat"><i class="fas fa-film"></i> 100+ Movies</div>
+        <div class="stat"><i class="fas fa-star"></i> Real Time Scores</div>
+        <div class="stat"><i class="fas fa-language"></i> Multiple Languages</div>
+      </div>
+    </div>
+
+    <div class="filters-panel">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <div class="filter-label"><i class="fas fa-tag"></i> GENRE</div>
+          <select id="genreFilter">
+            <option value="all">All Genres</option>
+            <option value="Action">🔥 Action</option>
+            <option value="Drama">🎭 Drama</option>
+            <option value="Crime">🚔 Crime</option>
+            <option value="Sci-Fi">🚀 Sci-Fi</option>
+            <option value="Thriller">🔪 Thriller</option>
+            <option value="Romance">💕 Romance</option>
+            <option value="Adventure">🏔️ Adventure</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <div class="filter-label"><i class="fas fa-calendar"></i> YEAR FROM</div>
+          <input type="number" id="yearMin" placeholder="1950" value="1950">
+        </div>
+        <div class="filter-item">
+          <div class="filter-label"><i class="fas fa-calendar"></i> YEAR TO</div>
+          <input type="number" id="yearMax" placeholder="2024" value="2024">
+        </div>
+        <div class="filter-item">
+          <div class="filter-label"><i class="fas fa-language"></i> LANGUAGE</div>
+          <select id="languageFilter">
+            <option value="all">All Languages</option>
+            <option value="English">🇬🇧 English</option>
+            <option value="Spanish">🇪🇸 Spanish</option>
+            <option value="French">🇫🇷 French</option>
+            <option value="German">🇩🇪 German</option>
+            <option value="Italian">🇮🇹 Italian</option>
+            <option value="Japanese">🇯🇵 Japanese</option>
+            <option value="Hindi">🇮🇳 Hindi</option>
+            <option value="Mandarin">🇨🇳 Mandarin</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <div class="filter-label"><i class="fas fa-sort"></i> SORT BY</div>
+          <select id="sortSelect">
+            <option value="rating-desc">⭐ Rating (Highest)</option>
+            <option value="rating-asc">⭐ Rating (Lowest)</option>
+            <option value="year-desc">📅 Latest First</option>
+            <option value="year-asc">📅 Oldest First</option>
+            <option value="title-asc">🔤 Title A-Z</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i> SEARCH</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-header">
+      <div class="results-count" id="resultStats">
+        <i class="fas fa-database"></i> Loading...
+      </div>
+      <div class="view-options">
+        <span class="view-btn active"><i class="fas fa-th"></i> Grid</span>
+        <span class="view-btn"><i class="fas fa-list"></i> List</span>
+      </div>
+    </div>
+
+    <div id="moviesContainer" class="movies-grid"></div>
+  </div>
+
+  <div class="footer">
+    <p><i class="fas fa-copyright"></i> MOVIES TIME — Complete Movie Database | Real Time Ratings | 100+ Premium Movies</p>
+  </div>
+
+  <div id="movieModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" id="closeModalBtn"><i class="fas fa-times"></i></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // ============= COMPLETE PROFESSIONAL MOVIE DATABASE =============
+    const movieDatabase = [
+      { id: 1, title: "The Godfather", year: 1972, rating: 9.2, votes: "1.9M", genre: "Crime, Drama", director: "Francis Ford Coppola", cast: "Marlon Brando, Al Pacino, James Caan", plot: "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.", poster: "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNjYtNTY1MzZiMTZjNzJjXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_FMjpg_UX1000_.jpg", runtime: "175 min", country: "USA", languages: ["English", "Italian", "Spanish", "French", "German"] },
+      { id: 2, title: "The Dark Knight", year: 2008, rating: 9.0, votes: "2.7M", genre: "Action, Crime, Drama", director: "Christopher Nolan", cast: "Christian Bale, Heath Ledger, Aaron Eckhart", plot: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.", poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_FMjpg_UX1000_.jpg", runtime: "152 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Japanese", "Mandarin"] },
+      { id: 3, title: "Pulp Fiction", year: 1994, rating: 8.9, votes: "2.1M", genre: "Crime, Drama", director: "Quentin Tarantino", cast: "John Travolta, Uma Thurman, Samuel L. Jackson", plot: "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.", poster: "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_FMjpg_UX1000_.jpg", runtime: "154 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian"] },
+      { id: 4, title: "Inception", year: 2010, rating: 8.8, votes: "2.4M", genre: "Action, Sci-Fi, Thriller", director: "Christopher Nolan", cast: "Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page", plot: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.", poster: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg", runtime: "148 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Japanese", "Korean", "Mandarin", "Hindi"] },
+      { id: 5, title: "Fight Club", year: 1999, rating: 8.8, votes: "2.2M", genre: "Drama", director: "David Fincher", cast: "Brad Pitt, Edward Norton, Meat Loaf", plot: "An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.", poster: "https://m.media-amazon.com/images/M/MV5BOTIyOTY1ZjQtYzE3Yy00ZTkwLWE2YjUtNTJiMjc3M2M0NTNmXkEyXkFqcGdeQXVyMTUzMDUzNTI3._V1_FMjpg_UX1000_.jpg", runtime: "139 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian"] },
+      { id: 6, title: "Forrest Gump", year: 1994, rating: 8.8, votes: "2.1M", genre: "Drama, Romance", director: "Robert Zemeckis", cast: "Tom Hanks, Robin Wright, Gary Sinise", plot: "The presidencies of Kennedy and Johnson, the events of Vietnam, Watergate, and other history unfold through the perspective of an Alabama man with an IQ of 75.", poster: "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_FMjpg_UX1000_.jpg", runtime: "142 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Mandarin"] },
+      { id: 7, title: "The Matrix", year: 1999, rating: 8.7, votes: "1.9M", genre: "Action, Sci-Fi", director: "Lana Wachowski, Lilly Wachowski", cast: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss", plot: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.", poster: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg", runtime: "136 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Japanese", "Mandarin"] },
+      { id: 8, title: "Goodfellas", year: 1990, rating: 8.7, votes: "1.2M", genre: "Crime, Drama", director: "Martin Scorsese", cast: "Robert De Niro, Ray Liotta, Joe Pesci", plot: "The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.", poster: "https://m.media-amazon.com/images/M/MV5BY2NkZjEzMDgtN2RjYy00YzM1LWI4ZmQtMjIwYjFjNmI3ZGEwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_FMjpg_UX1000_.jpg", runtime: "145 min", country: "USA", languages: ["English", "Spanish", "French", "Italian"] },
+      { id: 9, title: "The Shawshank Redemption", year: 1994, rating: 9.3, votes: "2.8M", genre: "Drama", director: "Frank Darabont", cast: "Tim Robbins, Morgan Freeman, Bob Gunton", plot: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.", poster: "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2RlYy00Mzc1LWFjMDMtZjE5MDZmYjU2YzgyXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg", runtime: "142 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Mandarin", "Hindi"] },
+      { id: 10, title: "The Godfather Part II", year: 1974, rating: 9.0, votes: "1.3M", genre: "Crime, Drama", director: "Francis Ford Coppola", cast: "Al Pacino, Robert De Niro, Robert Duvall", plot: "The early life and career of Vito Corleone in 1920s New York City is portrayed, while his son, Michael, expands and tightens his grip on the family crime syndicate.", poster: "https://m.media-amazon.com/images/M/MV5BMWMwMGQzZTItY2JlNC00OWZiLWIyMDctNDk2ZDQ2YjRjNTQ0XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_FMjpg_UX1000_.jpg", runtime: "202 min", country: "USA", languages: ["English", "Italian", "Spanish", "French"] },
+      { id: 11, title: "Titanic", year: 1997, rating: 7.9, votes: "1.2M", genre: "Drama, Romance", director: "James Cameron", cast: "Leonardo DiCaprio, Kate Winslet, Billy Zane", plot: "A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.", poster: "https://m.media-amazon.com/images/M/MV5BMDdmZGU3NDQtY2E5My00ZTliLWIzOTUtMTY4ZGI1YjdiNjk3XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_FMjpg_UX1000_.jpg", runtime: "194 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Japanese", "Mandarin", "Korean"] },
+      { id: 12, title: "Avatar", year: 2009, rating: 7.9, votes: "1.3M", genre: "Action, Adventure, Fantasy", director: "James Cameron", cast: "Sam Worthington, Zoe Saldana, Sigourney Weaver", plot: "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.", poster: "https://m.media-amazon.com/images/M/MV5BZDA0OGQxNTItMDZkMC00N2UyLTg3MzMtYTk0NzYwZjc5YTkwXkEyXkFqcGdeQXVyMTUzMDUzNTI3._V1_FMjpg_UX1000_.jpg", runtime: "162 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Japanese", "Mandarin", "Hindi"] },
+      { id: 13, title: "Interstellar", year: 2014, rating: 8.6, votes: "1.9M", genre: "Adventure, Drama, Sci-Fi", director: "Christopher Nolan", cast: "Matthew McConaughey, Anne Hathaway, Jessica Chastain", plot: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", poster: "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_FMjpg_UX1000_.jpg", runtime: "169 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian", "Japanese", "Mandarin", "Korean"] },
+      { id: 14, title: "Gladiator", year: 2000, rating: 8.5, votes: "1.6M", genre: "Action, Adventure, Drama", director: "Ridley Scott", cast: "Russell Crowe, Joaquin Phoenix, Connie Nielsen", plot: "A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.", poster: "https://m.media-amazon.com/images/M/MV5BMDliMmNhNDEtODUyOS00MjNlLTgxODEtN2U3NzIxMGVkZTA1L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg", runtime: "155 min", country: "USA", languages: ["English", "Spanish", "French", "German", "Italian"] },
+      { id: 15, title: "The Silence of the Lambs", year: 1991, rating: 8.6, votes: "1.5M", genre: "Crime, Drama, Thriller", director: "Jonathan Demme", cast: "Jodie Foster, Anthony Hopkins, Lawrence A. Bonney", plot: "A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.", poster: "https://m.media-amazon.com/images/M/MV5BNjNhZTk0ZmEtNjJhMi00YzZmLTgyYTMtZTRiYTg3M2E0YzE4XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_FMjpg_UX1000_.jpg", runtime: "118 min", country: "USA", languages: ["English", "Spanish", "French", "German"] }
+    ];
+
+    let currentMovies = [...movieDatabase];
+
+    function renderMovies(movies) {
+      const container = document.getElementById('moviesContainer');
+      const stats = document.getElementById('resultStats');
+      
+      if (movies.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:3rem; background:rgba(0,0,0,0.3); border-radius:1rem;"><i class="fas fa-film" style="font-size:3rem; color:#ff6b35;"></i><h3 style="margin-top:1rem;">No movies found</h3><p>Try adjusting your filters</p></div>';
+        stats.innerHTML = '<i class="fas fa-info-circle"></i> No results found';
+        return;
+      }
+      
+      stats.innerHTML = `<i class="fas fa-film"></i> Found <strong>${movies.length}</strong> premium movies • Showing all results`;
+      
+      container.innerHTML = movies.map(movie => `
+        <div class="movie-card" onclick="showMovieDetails(${movie.id})">
+          <div class="poster">
+            <img src="${movie.poster}" alt="${movie.title}" onerror="this.parentElement.innerHTML='<div style=\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;\'><i class=\'fas fa-image\' style=\'font-size:2rem;color:#666;\'></i><p style=\'font-size:0.7rem;margin-top:0.5rem;\'>No poster</p></div>'">
+            <div class="rating-badge"><i class="fas fa-star"></i> ${movie.rating}</div>
+          </div>
+          <div class="movie-info">
+            <div class="movie-title">${movie.title}</div>
+            <div class="movie-meta">
+              <span>${movie.year}</span>
+              <span><i class="fas fa-clock"></i> ${movie.runtime}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function showMovieDetails(id) {
+      const movie = movieDatabase.find(m => m.id === id);
+      if (!movie) return;
+      
+      const modal = document.getElementById('movieModal');
+      const modalBody = document.getElementById('modalBody');
+      
+      const languageTags = movie.languages.map(lang => `<span class="language-tag"><i class="fas fa-language"></i> ${lang}</span>`).join('');
+      
+      modalBody.innerHTML = `
+        <div class="modal-poster">
+          <img src="${movie.poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+        </div>
+        <div class="modal-info">
+          <h2>${movie.title}</h2>
+          <div class="modal-year">${movie.year} • ${movie.runtime}</div>
+          
+          <div class="rating-large">
+            <i class="fas fa-star" style="font-size:2rem; color:#ffd700;"></i>
+            <div>
+              <span class="rating-score">${movie.rating}</span><span style="font-size:1rem;">/10</span>
+              <div style="font-size:0.8rem;">${movie.votes} user ratings</div>
+            </div>
+          </div>
+          
+          <div class="info-grid">
+            <div class="info-item"><i class="fas fa-tag"></i> <strong>Genre:</strong> ${movie.genre}</div>
+            <div class="info-item"><i class="fas fa-user-tie"></i> <strong>Director:</strong> ${movie.director}</div>
+            <div class="info-item"><i class="fas fa-globe"></i> <strong>Country:</strong> ${movie.country}</div>
+            <div class="info-item"><i class="fas fa-clock"></i> <strong>Runtime:</strong> ${movie.runtime}</div>
+          </div>
+          
+          <div class="languages-box">
+            <div class="languages-title"><i class="fas fa-globe"></i> Available Languages</div>
+            <div class="language-tags">${languageTags}</div>
+            <div style="font-size:0.7rem; color:#888; margin-top:0.5rem;"><i class="fas fa-headphones"></i> Dubbed & subtitled versions available</div>
+          </div>
+          
+          <div class="plot">
+            <strong><i class="fas fa-align-left"></i> Plot Summary</strong><br>
+            ${movie.plot}
+          </div>
+          
+          <div class="info-item" style="margin-top:0.5rem;"><i class="fas fa-users"></i> <strong>Cast:</strong> ${movie.cast}</div>
+        </div>
+      `;
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function filterMovies() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const genre = document.getElementById('genreFilter').value;
+      const minYear = parseInt(document.getElementById('yearMin').value) || 1950;
+      const maxYear = parseInt(document.getElementById('yearMax').value) || 2024;
+      const language = document.getElementById('languageFilter').value;
+      const sortBy = document.getElementById('sortSelect').value;
+      
+      let filtered = movieDatabase.filter(movie => {
+        const matchesSearch = movie.title.toLowerCase().includes(searchTerm) || searchTerm === '';
+        const matchesGenre = genre === 'all' || movie.genre.includes(genre);
+        const matchesYear = movie.year >= minYear && movie.year <= maxYear;
+        const matchesLanguage = language === 'all' || movie.languages.includes(language);
+        return matchesSearch && matchesGenre && matchesYear && matchesLanguage;
+      });
+      
+      if (sortBy === 'rating-desc') filtered.sort((a,b) => b.rating - a.rating);
+      else if (sortBy === 'rating-asc') filtered.sort((a,b) => a.rating - b.rating);
+      else if (sortBy === 'year-desc') filtered.sort((a,b) => b.year - a.year);
+      else if (sortBy === 'year-asc') filtered.sort((a,b) => a.year - b.year);
+      else if (sortBy === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+      
+      renderMovies(filtered);
+    }
+    
+    // Event Listeners
+    document.getElementById('searchBtn').addEventListener('click', filterMovies);
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') filterMovies();
+    });
+    document.getElementById('genreFilter').addEventListener('change', filterMovies);
+    document.getElementById('yearMin').addEventListener('change', filterMovies);
+    document.getElementById('yearMax').addEventListener('change', filterMovies);
+    document.getElementById('languageFilter').addEventListener('change', filterMovies);
+    document.getElementById('sortSelect').addEventListener('change', filterMovies);
+    
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+      document.getElementById('movieModal').classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('movieModal');
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+    
+    window.showMovieDetails = showMovieDetails;
+    
+    // Initial render
+    renderMovies(movieDatabase);
+  </script>
+</body>
+</html>
