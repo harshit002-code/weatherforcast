@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Harshit Tyagi | Front-End Developer | Pro Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0B2F24 0%, #0a2a20 50%, #0c3528 100%);
+      color: #FFFFFF;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+    }
+
+    /* Improved background with subtle movement */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(80, 180, 140, 0.15), rgba(40, 100, 80, 0.05));
+      filter: blur(70px);
+      animation: floatSlow 25s infinite alternate;
+    }
+
+    @keyframes floatSlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(5%, 10%) scale(1.3); }
+    }
+
+    /* Particle system */
+    .particle {
+      position: fixed;
+      background: rgba(163, 216, 197, 0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: particleDrift 12s infinite linear;
+    }
+
+    @keyframes particleDrift {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.4; }
+      100% {
+        transform: translateY(-20vh) translateX(40px);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Header */
+    .site-header {
+      padding: 1.5rem 0 1rem 0;
+      background: rgba(11, 47, 36, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo a {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      background: linear-gradient(135deg, #FFFFFF, #A3D8C5);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #E0F2EA;
+      transition: all 0.25s ease;
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .nav-links a.active-nav {
+      color: #FFFFFF;
+      border-bottom: 2px solid #FFFFFF;
+    }
+
+    .nav-links a:hover {
+      color: #FFFFFF;
+      border-bottom: 2px solid rgba(255,255,255,0.6);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 3rem 0 2rem 0;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      color: #A3D8C5;
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      max-width: 800px;
+    }
+
+    .hero-highlight {
+      background: linear-gradient(120deg, #A3D8C5, #FFFFFF);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 2rem;
+      max-width: 650px;
+    }
+
+    .btn-primary {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      color: white;
+      padding: 0.85rem 2rem;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-block;
+      transition: all 0.25s;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline-light {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.5);
+      color: #FFFFFF;
+      padding: 0.85rem 2rem;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-block;
+      margin-left: 1rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: #FFFFFF;
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 3rem 0 1rem 0;
+      background: linear-gradient(135deg, #FFFFFF, #A3D8C5);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .section-sub {
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      border-left: 3px solid rgba(255,255,255,0.5);
+      padding-left: 1rem;
+    }
+
+    /* ========== IMPROVED PORTFOLIO GRID WITH PROPER GAPS ========== */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0 3rem;
+    }
+
+    /* Fix gap and spacing issues */
+    .portfolio-card {
+      background: rgba(18, 55, 44, 0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .portfolio-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255,255,255,0.35);
+      background: rgba(25, 68, 55, 0.85);
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.4);
+    }
+
+    .portfolio-img {
+      background: linear-gradient(135deg, #1A5D4A, #0F382C);
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.3s;
+    }
+
+    .portfolio-card:hover .portfolio-img {
+      transform: scale(1.02);
+    }
+
+    .portfolio-content {
+      padding: 1.6rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .portfolio-cat {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #A3D8C5;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .portfolio-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      color: #FFFFFF;
+      line-height: 1.3;
+    }
+
+    .portfolio-desc {
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+
+    /* Tech stack with proper spacing */
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 0.8rem 0 1rem;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      background: rgba(163, 216, 197, 0.2);
+      padding: 0.35rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #D4F1E9;
+      border: 1px solid rgba(163, 216, 197, 0.4);
+      transition: all 0.2s;
+    }
+
+    .tech-tag:hover {
+      background: rgba(163, 216, 197, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .case-study-link {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #A3D8C5;
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 1.5px solid rgba(163, 216, 197, 0.5);
+      padding-top: 0.75rem;
+      align-self: flex-start;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-size: 0.85rem;
+    }
+
+    .case-study-link:hover {
+      color: #FFFFFF;
+      border-bottom-color: #FFFFFF;
+      gap: 0.8rem;
+    }
+
+    /* Skills Cards */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0 3rem;
+    }
+
+    .skill-card {
+      background: rgba(18, 55, 44, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .skill-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255,255,255,0.35);
+    }
+
+    .skill-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .skill-card h3 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+
+    .skill-card p {
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    /* About Section */
+    .about-section {
+      background: rgba(18, 55, 44, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 40px;
+      padding: 2.5rem;
+      margin: 2rem 0;
+      border-left: 4px solid #A3D8C5;
+    }
+
+    /* Python Showcase */
+    .python-section {
+      background: linear-gradient(135deg, #0F382C, #1A4D3C);
+      border-radius: 32px;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .python-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .python-item {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 24px;
+      padding: 1.2rem;
+      transition: transform 0.2s;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .python-item:hover {
+      transform: translateY(-4px);
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .code-snippet {
+      background: #051A14;
+      padding: 0.8rem;
+      border-radius: 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      overflow-x: auto;
+      color: #A3D8C5;
+      margin-top: 0.8rem;
+    }
+
+    /* Approach Section */
+    .approach-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .approach-card {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s;
+    }
+
+    .approach-card:hover {
+      transform: translateY(-5px);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .approach-card h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+
+    /* CTA */
+    .cta-strip {
+      background: linear-gradient(135deg, #0F382C, #1A4D3C);
+      border-radius: 32px;
+      padding: 2.5rem;
+      margin: 3rem 0 2rem;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-white {
+      background: rgba(255,255,255,0.95);
+      color: #0B2F24;
+      padding: 0.75rem 2rem;
+      border-radius: 40px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .btn-white:hover {
+      background: #FFFFFF;
+      transform: scale(1.02);
+    }
+
+    /* Contact */
+    .contact-block {
+      background: rgba(18, 55, 44, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 2rem;
+      margin-top: 1rem;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .contact-block a {
+      color: #A3D8C5;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(163,216,197,0.4);
+    }
+
+    .contact-block a:hover {
+      color: #FFFFFF;
+    }
+
+    /* Footer */
+    .site-footer {
+      margin-top: 4rem;
+      padding: 2rem 0;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(11, 47, 36, 0.9);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-container {
+      background: #0F382C;
+      border: 1px solid rgba(255,255,255,0.25);
+      max-width: 550px;
+      width: 90%;
+      border-radius: 32px;
+      padding: 2rem;
+      position: relative;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 1.8rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #FFFFFF;
+    }
+
+    .close-modal:hover {
+      color: #A3D8C5;
+    }
+
+    @media (max-width: 750px) {
+      .container { padding: 0 1.25rem; }
+      .hero h1 { font-size: 2.2rem; }
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .portfolio-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .skills-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-animation">
+  <div class="bg-orb" style="width: 400px; height: 400px; top: -100px; left: -100px; animation-duration: 20s;"></div>
+  <div class="bg-orb" style="width: 500px; height: 500px; bottom: -150px; right: -100px; animation-duration: 28s; animation-delay: 2s;"></div>
+  <div class="bg-orb" style="width: 300px; height: 300px; top: 40%; left: 60%; animation-duration: 25s; animation-delay: 5s;"></div>
+</div>
+
+<script>
+  for(let i = 0; i < 60; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    particle.style.width = (2 + Math.random() * 5) + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDuration = 8 + Math.random() * 14 + 's';
+    particle.style.animationDelay = Math.random() * 12 + 's';
+    document.body.appendChild(particle);
+  }
+</script>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <a href="#">Harshit<span>Tyagi</span></a>
+    </div>
+    <div class="nav-links">
+      <a data-nav="home" class="active-nav">Home</a>
+      <a data-nav="portfolio">Portfolio</a>
+      <a data-nav="skills">Skills</a>
+      <a data-nav="about">About</a>
+      <a data-nav="contact">Contact</a>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+  <div id="page-container"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p> Harshit Tyagi — Front-End Developer | JIIT, Noida</p>
+    <p style="margin-top: 0.5rem; color: #A3D8C5;"> HTML • CSS • JS • Python • Building modern, intelligent web experiences</p>
+  </div>
+</footer>
+
+<script>
+  // Data
+  const college = "Japee Institute of Information Technology (JIIT), Noida";
+  const phone = "+91 81305 21457";
+  const email = "tyagihars002@gmail.com";
+
+  const skillsData = [
+    { title: "HTML, CSS & JS", icon: "🎨", shortDesc: "Expert in semantic HTML5, advanced CSS (Flex/Grid/animations), ES6+ JavaScript. Creating interactive, accessible experiences.", fullDesc: "Pixel-perfect responsive designs with modern animations and cross-browser compatibility.", tags: ["HTML5", "CSS3", "JS"] },
+    { title: "React & Frameworks", icon: "⚛️", shortDesc: "Reusable components, state management, API integration. Modern UI/UX with performance optimization.", fullDesc: "Building dynamic SPAs using React, Context API, Vite for fast development.", tags: ["React", "Vite", "Context API"] },
+    { title: "Python Basics", icon: "🐍", shortDesc: "Proficient in Python for web scraping, automation, Flask APIs, and data processing.", fullDesc: "Combining frontend with Python for full-stack solutions, data handling, and backend logic.", tags: ["Python", "Flask", "APIs", "Data"] }
+  ];
+
+  // Portfolio items with proper data
+  const portfolioItems = [
+    { id: 1, title: "Weather Forecast App", category: "JAVASCRIPT API", desc: "Real-time weather data with dynamic UI and location-based forecasts.", fullDetail: "Responsive weather app fetching live data from OpenWeatherMap API. Shows temperature, humidity, wind speed, pressure, and 5-day forecast with dynamic weather icons. Built with async/await, error handling, and geolocation.", githubLink: "https://github.com/harshit002-code/weatherforcast", tech: ["HTML5", "CSS3", "JS", "REST API"], icon: "🌤️" },
+    { id: 2, title: "Movie Search Engine", category: "OMDB API", desc: "Search any movie, get ratings, plot summary, and high-res poster.", fullDetail: "Movie discovery tool using OMDb API. Features real-time search, auto-suggestions, IMDb rating display, plot summary, release year, and responsive poster gallery. Clean UI with loading states.", githubLink: "https://github.com/harshit002-code/weatherforcast/blob/main/movie%20search.html", tech: ["HTML5", "CSS3", "JS", "OMDb API"], icon: "🎬" },
+    { id: 3, title: "Fitness Tracker", category: "HEALTH & WELLNESS", desc: "Log workouts, track calories, and store progress locally.", fullDetail: "Complete fitness dashboard with exercise logging, calorie tracking, progress charts, workout history, and goal setting. Uses localStorage for data persistence. Features daily summaries and motivational quotes.", githubLink: "https://github.com/harshit002-code/weatherforcast/blob/main/fitness.html", tech: ["HTML5", "CSS3", "JS", "LocalStorage"], icon: "💪" }
+  ];
+
+  const pythonTopics = [
+    { name: "Data Types & Variables", desc: "Integers, floats, strings, lists, dicts, tuples", example: "name = 'Harshit'\nscore = 95\nskills = ['HTML','CSS','Python']" },
+    { name: "Control Flow", desc: "if-elif-else, loops, list comprehensions", example: "for i in range(5):\n    print(f'Count: {i}')" },
+    { name: "Functions & Modules", desc: "Reusable code, imports, lambda functions", example: "def greet(user):\n    return f'Hello {user}!'" },
+    { name: "File Handling", desc: "Read/write files, CSV processing", example: "with open('data.txt','r') as f:\n    content = f.read()" }
+  ];
+
+  // Rendering functions
+  function renderHomePage() {
+    return `
+      <div class="container">
+        <div class="hero">
+          <div class="hero-badge">📍 ${college}</div>
+          <h1>Hi, I'm Harshit Tyagi <br><span class="hero-highlight">Front-End Developer</span></h1>
+          <p class="hero-desc">I build responsive, user-friendly websites using HTML, CSS, JavaScript , and Python. Passionate about clean code and modern design.</p>
+          <div><a class="btn-primary" data-nav="portfolio">View my work →</a><a class="btn-outline-light" data-nav="contact">Contact me</a></div>
+        </div>
+
+        <h2 class="section-title">Technical Skills</h2>
+        <div class="skills-grid">
+          ${skillsData.map(s => `
+            <div class="skill-card">
+              <div class="skill-icon">${s.icon}</div>
+              <h3>${s.title}</h3>
+              <p>${s.shortDesc}</p>
+              <div class="tech-stack">
+                ${s.tags.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+              </div>
+              <span class="case-study-link" data-skill-detail="${s.title.replace(/\s/g,'')}">Learn more →</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="approach-grid">
+          <div class="approach-card"><h4>💡 Clean Code</h4><p>Maintainable, semantic HTML/CSS/JS following best practices.</p></div>
+          <div class="approach-card"><h4>⚡ Performance</h4><p>Optimized assets, fast rendering for better UX & SEO.</p></div>
+          <div class="approach-card"><h4>🔄 Responsive</h4><p>Websites that shine on all devices — mobile, tablet, desktop.</p></div>
+        </div>
+
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="section-sub">Click any card for details & GitHub links</div>
+        <div class="portfolio-grid">
+          ${portfolioItems.map(p => `
+            <div class="portfolio-card" data-portfolio-id="${p.id}">
+              <div class="portfolio-img">${p.icon}</div>
+              <div class="portfolio-content">
+                <div class="portfolio-cat">${p.category}</div>
+                <h3 class="portfolio-title">${p.title}</h3>
+                <p class="portfolio-desc">${p.desc}</p>
+                <div class="tech-stack">
+                  ${p.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+                </div>
+                <span class="case-study-link">View case study →</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="cta-strip">
+          <h3>Let's build something great</h3>
+          <p>Open for freelance, internships & collaboration.</p>
+          <a class="btn-white" data-nav="contact">Get in touch →</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPortfolioPage() {
+    return `
+      <div class="container">
+        <h1 class="section-title">My Projects</h1>
+        <div class="section-sub">Click any card for details & GitHub links</div>
+        <div class="portfolio-grid">
+          ${portfolioItems.map(p => `
+            <div class="portfolio-card" data-portfolio-id="${p.id}">
+              <div class="portfolio-img">${p.icon}</div>
+              <div class="portfolio-content">
+                <div class="portfolio-cat">${p.category}</div>
+                <h3 class="portfolio-title">${p.title}</h3>
+                <p class="portfolio-desc">${p.desc}</p>
+                <div class="tech-stack">
+                  ${p.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+                </div>
+                <span class="case-study-link">View case study →</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSkillsPage() {
+    return `
+      <div class="container">
+        <h1 class="section-title">Technical Expertise</h1>
+        <div class="skills-grid">
+          ${skillsData.map(s => `
+            <div class="skill-card">
+              <div class="skill-icon">${s.icon}</div>
+              <h3>${s.title}</h3>
+              <p>${s.fullDesc}</p>
+              <div class="tech-stack">
+                ${s.tags.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAboutPage() {
+    return `
+      <div class="container">
+        <h1 class="section-title">About Me</h1>
+        <div class="about-section">
+          <p style="font-size:1.3rem; font-weight:700; margin-bottom:1rem;">👋 Harshit Tyagi — Front-End Developer</p>
+          <p>I'm currently pursuing my studies at <strong style="color:#A3D8C5;">Japee Institute of Information Technology (JIIT), Noida</strong>, where I've developed strong expertise in HTML, CSS, JavaScript, and Python. I love transforming ideas into interactive, user-friendly websites that solve real-world problems.</p>
+          <hr style="margin:1.5rem 0; border-color:rgba(255,255,255,0.15);">
+          <p><strong>What drives me:</strong> Clean design, responsive layouts, and writing efficient code. I've built projects like a weather app, movie search engine, and fitness tracker — all available on my GitHub.</p>
+        </div>
+        <div class="python-section">
+          <h2 style="font-size:1.8rem; margin-bottom:0.5rem;">🐍 Python Foundation</h2>
+          <p>Strong foundation in Python programming for web and data:</p>
+          <div class="python-grid">
+            ${pythonTopics.map(topic => `
+              <div class="python-item">
+                <h4>📘 ${topic.name}</h4>
+                <p style="font-size:0.85rem;">${topic.desc}</p>
+                <div class="code-snippet"><code>${topic.example.replace(/\n/g,'<br>')}</code></div>
+              </div>
+            `).join('')}
+          </div>
+          <p style="margin-top:1rem; font-size:0.9rem;">Plus: Error handling, list comprehensions, lambda functions, Flask APIs, and data processing.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderContactPage() {
+    return `
+      <div class="container">
+        <h1 class="section-title">Get In Touch</h1>
+        <div class="section-sub">Let's collaborate on your next project</div>
+        <div class="contact-block">
+          <p>📞 <strong>Phone:</strong> <a href="tel:+918130521457">${phone}</a></p>
+          <p>📧 <strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+          <p>💻 <strong>GitHub:</strong> <a href="https://github.com/harshit002-code" target="_blank">github.com/harshit002-code</a></p>
+          <p>📍 <strong>Location:</strong> Noida / Delhi NCR, India</p>
+          <div style="margin-top:1.8rem;"><a href="https://github.com/harshit002-code" target="_blank" class="btn-primary" style="margin-right:1rem;">GitHub Profile</a><a class="btn-outline-light" data-nav="portfolio">View Projects</a></div>
+        </div>
+      </div>
+    `;
+  }
+
+  let activeModal = null;
+  
+  function openProjectModal(id) {
+    const proj = portfolioItems.find(p => p.id === id);
+    if (!proj) return;
+    if (activeModal) document.body.removeChild(activeModal);
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal-container">
+        <button class="close-modal">✕</button>
+        <h2>${proj.title}</h2>
+        <div class="portfolio-cat" style="margin:0.5rem 0;">${proj.category}</div>
+        <p>${proj.fullDetail}</p>
+        <div style="background:rgba(0,0,0,0.3); padding:1rem; margin:1rem 0; border-radius:16px;">
+          <strong>🛠️ Tech Stack:</strong>
+          <div style="margin-top:0.5rem;">${proj.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}</div>
+        </div>
+        <a href="${proj.githubLink}" target="_blank" class="btn-primary" style="display:inline-block;">🔗 View on GitHub</a>
+      </div>`;
+    document.body.appendChild(overlay);
+    activeModal = overlay;
+    setTimeout(() => overlay.classList.add('active'), 10);
+    const close = () => { overlay.classList.remove('active'); setTimeout(() => overlay.remove(), 200); if (activeModal === overlay) activeModal = null; };
+    overlay.querySelector('.close-modal').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  }
+
+  function openSkillDetail(titleClean) {
+    const skill = skillsData.find(s => s.title.replace(/\s/g,'') === titleClean);
+    if (!skill) return;
+    if (activeModal) document.body.removeChild(activeModal);
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `<div class="modal-container"><button class="close-modal">✕</button><h2>${skill.title}</h2><p>${skill.fullDesc}</p><div><strong style="color:#A3D8C5;">Core Expertise:</strong><ul style="margin-top:0.5rem; margin-left:1.2rem;"><li>Modern responsive layouts</li><li>Interactive front-end</li><li>Clean code architecture</li></ul></div></div>`;
+    document.body.appendChild(overlay);
+    activeModal = overlay;
+    setTimeout(() => overlay.classList.add('active'), 10);
+    const close = () => { overlay.classList.remove('active'); setTimeout(() => overlay.remove(), 200); if (activeModal === overlay) activeModal = null; };
+    overlay.querySelector('.close-modal').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  }
+
+  let currentPage = 'home';
+  const container = document.getElementById('page-container');
+  
+  function render(page) {
+    if (page === 'home') container.innerHTML = renderHomePage();
+    else if (page === 'portfolio') container.innerHTML = renderPortfolioPage();
+    else if (page === 'skills') container.innerHTML = renderSkillsPage();
+    else if (page === 'about') container.innerHTML = renderAboutPage();
+    else if (page === 'contact') container.innerHTML = renderContactPage();
+    attachEvents();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function attachEvents() {
+    document.querySelectorAll('[data-portfolio-id]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const id = parseInt(el.getAttribute('data-portfolio-id'));
+        if (!isNaN(id)) openProjectModal(id);
+      });
+    });
+    document.querySelectorAll('[data-skill-detail]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSkillDetail(btn.getAttribute('data-skill-detail'));
+      });
+    });
+    document.querySelectorAll('[data-nav]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const nav = link.getAttribute('data-nav');
+        if (nav === 'home') currentPage = 'home';
+        else if (nav === 'portfolio') currentPage = 'portfolio';
+        else if (nav === 'skills') currentPage = 'skills';
+        else if (nav === 'about') currentPage = 'about';
+        else if (nav === 'contact') currentPage = 'contact';
+        render(currentPage);
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active-nav'));
+        document.querySelector(`.nav-links a[data-nav="${nav}"]`)?.classList.add('active-nav');
+      });
+    });
+  }
+
+  render('home');
+</script>
+</body>
+</html>
